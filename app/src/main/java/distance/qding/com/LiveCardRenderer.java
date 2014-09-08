@@ -68,6 +68,12 @@ public class LiveCardRenderer implements DirectRenderingCallback, SensorEventLis
     // Distance from camera to object.
     private float mDistance;
 
+    // Lock distance for captured display.
+    private float mDistanceLocked;
+
+    // Flag indicating whether we need to lock the distance or not.
+    private boolean mCapture;
+
     private int mCenterX;
     private int mCenterY;
 
@@ -76,7 +82,7 @@ public class LiveCardRenderer implements DirectRenderingCallback, SensorEventLis
 
     private RenderThread mRenderThread;
 
-    public LiveCardRenderer(Context context, String height) {
+    public LiveCardRenderer(Context context, String height, boolean isCapture) {
         mPaint = new Paint();
         mPaint.setStyle(Paint.Style.FILL);
         mPaint.setColor(Color.WHITE);
@@ -91,6 +97,9 @@ public class LiveCardRenderer implements DirectRenderingCallback, SensorEventLis
 
         Log.d(TAG, "Height: " + mHeight);
         // mText = context.getResources().getString(R.string.hello_world);
+
+        // set capture flag
+        mCapture = isCapture;
     }
 
     @Override
@@ -147,7 +156,13 @@ public class LiveCardRenderer implements DirectRenderingCallback, SensorEventLis
             return;
         }
         if (canvas != null) {
-            getDistance();
+            if (mCapture) {
+                mDistanceLocked = mDistance;
+                mText = mDecimalFormat.format(mDistanceLocked);
+            } else {
+                getDistance();
+            }
+
 
             // Clear the canvas.
             canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
@@ -163,7 +178,7 @@ public class LiveCardRenderer implements DirectRenderingCallback, SensorEventLis
 
     private void getDistance() {
         // Calculate distance based on sensor output
-        mDistance = Math.abs((float) (Integer.parseInt(mHeight) * Math.tan(mPitch * Math.PI / 180)));
+        mDistance = Math.abs((float) ((Integer.parseInt(mHeight) - 10) * Math.tan(mPitch * Math.PI / 180)));
 
         // Convert distance to string
         mText = mDecimalFormat.format(mDistance);

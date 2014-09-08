@@ -1,13 +1,12 @@
 package distance.qding.com;
 
-import com.google.android.glass.timeline.LiveCard;
-
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import com.google.android.glass.timeline.LiveCard;
 
 /**
  * A transparent {@link Activity} displaying a "Stop" options menu to remove the {@link LiveCard}.
@@ -15,7 +14,9 @@ import android.view.MenuItem;
 public class LiveCardMenuActivity extends Activity {
 
     private static final int SET_HEIGHT = 1;
+    private static final int SET_CAPTURE = 2;
     private static final String KEY_HEIGHT = "Height";
+    private static final String KEY_CAPTURE = "Capture";
     private static final String TAG = "LiveCardMenuActivity";
 
     @Override
@@ -43,9 +44,17 @@ public class LiveCardMenuActivity extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_capture:
+                // Change the menu item.
+                Intent captureIntent = new Intent(this, CaptureMenuActivity.class);
+                startActivityForResult(captureIntent, SET_CAPTURE);
 
+                // Allow user to capture the distance and fix the live card by calling onStartCommand again with new parameters.
+                Intent serviceIntent = new Intent(this, DistanceLiveCardService.class);
+                serviceIntent.putExtra(KEY_CAPTURE, true);
+                startService(serviceIntent);
+                return true;
             case R.id.action_set_height:
-                // Allow user to select height from SetHeightMenuActivity
+                // Allow user to select height from SetHeightMenuActivity.
                 Intent setHeightIntent = new Intent(LiveCardMenuActivity.this, SetHeightMenuActivity.class);
                 startActivityForResult(setHeightIntent, SET_HEIGHT);
                 return true;
@@ -75,8 +84,7 @@ public class LiveCardMenuActivity extends Activity {
                 String height = data.getExtras().getString(KEY_HEIGHT);
 
                 Intent serviceIntent = new Intent(this, DistanceLiveCardService.class);
-                Bundle extras = serviceIntent.getExtras();
-                extras.putString(KEY_HEIGHT, height);
+                serviceIntent.putExtra(KEY_HEIGHT, height);
                 startService(serviceIntent);
                 Log.d(TAG, "service started with height: " + height);
             }

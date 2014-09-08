@@ -1,17 +1,14 @@
 package distance.qding.com;
 
-import com.google.android.glass.timeline.LiveCard;
-import com.google.android.glass.timeline.LiveCard.PublishMode;
-
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
-import android.os.Bundle;
 import android.os.IBinder;
-import android.view.SurfaceView;
-import android.widget.TextView;
+
+import com.google.android.glass.timeline.LiveCard;
+import com.google.android.glass.timeline.LiveCard.PublishMode;
 
 /**
  * A {@link Service} that publishes a {@link LiveCard} in the timeline.
@@ -20,6 +17,7 @@ public class DistanceLiveCardService extends Service {
 
     private static final String LIVE_CARD_TAG = "DistanceLiveCardService";
     private static final String KEY_HEIGHT = "Height";
+    private static final String KEY_CAPTURE = "Capture";
 
     private LiveCard mLiveCard;
 
@@ -27,7 +25,11 @@ public class DistanceLiveCardService extends Service {
     private Sensor mAccSensor;
     private Sensor mMagnetSensor;
 
+    // The height of the user.
     private String mHeight;
+
+    // Flag indicating whether we need to lock the distance or not.
+    private boolean isCapture;
 
     @Override
     public void onCreate() {
@@ -47,15 +49,19 @@ public class DistanceLiveCardService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         // Grab height information from intent extra
-        mHeight = intent.getStringExtra(KEY_HEIGHT);
-        if (mHeight == null) {
+
+        if (intent.getStringExtra(KEY_HEIGHT) == null) {
             mHeight = "175";
+        } else {
+            mHeight = intent.getStringExtra(KEY_HEIGHT);
         }
+
+        isCapture = intent.getBooleanExtra(KEY_CAPTURE, false);
 
         if (mLiveCard == null) {
             mLiveCard = new LiveCard(this, LIVE_CARD_TAG);
 
-            LiveCardRenderer renderer = new LiveCardRenderer(this, mHeight);
+            LiveCardRenderer renderer = new LiveCardRenderer(this, mHeight, isCapture);
 
             mSensorManager.registerListener(renderer, mAccSensor,
                     SensorManager.SENSOR_DELAY_NORMAL);
