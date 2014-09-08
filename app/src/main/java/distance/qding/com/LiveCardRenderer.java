@@ -11,6 +11,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.SystemClock;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.View;
 
@@ -24,6 +25,7 @@ import java.text.DecimalFormat;
  */
 public class LiveCardRenderer implements DirectRenderingCallback, SensorEventListener {
 
+    private static final String TAG = "LiveCardRenderer";
     /**
      * The duration, in millisconds, of one frame.
      */
@@ -46,8 +48,14 @@ public class LiveCardRenderer implements DirectRenderingCallback, SensorEventLis
      */
     // private static final int MAX_ALPHA = 256;
 
+    // Paint object to draw on live card canvas
     private final Paint mPaint;
+
+    // Text to render on the live card
     private String mText;
+
+    // Height of the user
+    private String mHeight;
 
     // Sensor parameters to get distance
     private float[] mGravity;
@@ -68,7 +76,7 @@ public class LiveCardRenderer implements DirectRenderingCallback, SensorEventLis
 
     private RenderThread mRenderThread;
 
-    public LiveCardRenderer(Context context) {
+    public LiveCardRenderer(Context context, String height) {
         mPaint = new Paint();
         mPaint.setStyle(Paint.Style.FILL);
         mPaint.setColor(Color.WHITE);
@@ -78,6 +86,10 @@ public class LiveCardRenderer implements DirectRenderingCallback, SensorEventLis
         mPaint.setTypeface(Typeface.create("sans-serif-thin", Typeface.NORMAL));
         mPaint.setAlpha(100);
 
+        // set mHeight
+        mHeight = height;
+
+        Log.d(TAG, "Height: " + mHeight);
         // mText = context.getResources().getString(R.string.hello_world);
     }
 
@@ -151,7 +163,7 @@ public class LiveCardRenderer implements DirectRenderingCallback, SensorEventLis
 
     private void getDistance() {
         // Calculate distance based on sensor output
-        mDistance = Math.abs((float) (175f * Math.tan(mPitch * Math.PI / 180)));
+        mDistance = Math.abs((float) (Integer.parseInt(mHeight) * Math.tan(mPitch * Math.PI / 180)));
 
         // Convert distance to string
         mText = mDecimalFormat.format(mDistance);
@@ -164,6 +176,7 @@ public class LiveCardRenderer implements DirectRenderingCallback, SensorEventLis
 
     @Override
     public void onSensorChanged(SensorEvent event) {
+        // Log.d(TAG, "onSensorChanged called");
         if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
             mGravity = event.values.clone();
         }

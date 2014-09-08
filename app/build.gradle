@@ -13,8 +13,8 @@ android {
 
     defaultConfig {
         applicationId "distance.qding.com"
-        minSdkVersion 19
-        targetSdkVersion 20
+        minSdkVersion 18
+        targetSdkVersion 19
         versionCode 1
         versionName "1.0"
     }
