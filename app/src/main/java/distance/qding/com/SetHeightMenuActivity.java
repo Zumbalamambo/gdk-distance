@@ -13,7 +13,7 @@ public class SetHeightMenuActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG, "onCreate called");
+        // Log.d(TAG, "onCreate called");
         super.onCreate(savedInstanceState);
     }
 
@@ -40,7 +40,7 @@ public class SetHeightMenuActivity extends Activity {
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        Log.d(TAG, "onOptionsItemSelected called");
+        // Log.d(TAG, "onOptionsItemSelected called");
         // getTitle returns CharSequence. We need to convert it to string and then parse to int.
         String height = item.getTitle().toString();
 
@@ -48,14 +48,15 @@ public class SetHeightMenuActivity extends Activity {
         Intent returnIntent = new Intent();
         returnIntent.putExtra("Height", height);
         setResult(RESULT_OK, returnIntent);
-        Log.d(TAG, "set height to " + height);
-        finish();
+        // Log.d(TAG, "set height to " + height);
+        // finish();
 
         return true;
     }
 
     @Override
     public void onOptionsMenuClosed(Menu menu) {
+        Log.d(TAG, "onOptionsMenuClosed called");
         super.onOptionsMenuClosed(menu);
         // Nothing else to do, finish the Activity.
         finish();

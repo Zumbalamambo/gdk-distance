@@ -5,7 +5,9 @@ import android.app.Service;
 import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
+import android.os.Bundle;
 import android.os.IBinder;
+import android.util.Log;
 
 import com.google.android.glass.timeline.LiveCard;
 import com.google.android.glass.timeline.LiveCard.PublishMode;
@@ -20,6 +22,7 @@ public class DistanceLiveCardService extends Service {
     private static final String KEY_CAPTURE = "Capture";
 
     private LiveCard mLiveCard;
+    private LiveCardRenderer mRenderer = new LiveCardRenderer(this);
 
     private SensorManager mSensorManager;
     private Sensor mAccSensor;
@@ -49,26 +52,30 @@ public class DistanceLiveCardService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         // Grab height information from intent extra
-
-        if (intent.getStringExtra(KEY_HEIGHT) == null) {
+        Bundle bundle = intent.getExtras();
+        if (bundle == null) {
+            mHeight = "175";
+        } else if (bundle.getString(KEY_HEIGHT) == null) {
             mHeight = "175";
         } else {
-            mHeight = intent.getStringExtra(KEY_HEIGHT);
+            mHeight = bundle.getString(KEY_HEIGHT);
         }
 
         isCapture = intent.getBooleanExtra(KEY_CAPTURE, false);
+        // Log.d(LIVE_CARD_TAG, "mHeight: " + mHeight + "; isCapture: " + isCapture);
+
+        mRenderer.setHeight(mHeight);
+        mRenderer.setCapture(isCapture);
 
         if (mLiveCard == null) {
             mLiveCard = new LiveCard(this, LIVE_CARD_TAG);
 
-            LiveCardRenderer renderer = new LiveCardRenderer(this, mHeight, isCapture);
-
-            mSensorManager.registerListener(renderer, mAccSensor,
+            mSensorManager.registerListener(mRenderer, mAccSensor,
                     SensorManager.SENSOR_DELAY_NORMAL);
-            mSensorManager.registerListener(renderer, mMagnetSensor,
+            mSensorManager.registerListener(mRenderer, mMagnetSensor,
                     SensorManager.SENSOR_DELAY_NORMAL);
 
-            mLiveCard.setDirectRenderingEnabled(true).getSurfaceHolder().addCallback(renderer);
+            mLiveCard.setDirectRenderingEnabled(true).getSurfaceHolder().addCallback(mRenderer);
 
             // Display the options menu when the live card is tapped.
             Intent menuIntent = new Intent(this, LiveCardMenuActivity.class);

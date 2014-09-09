@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.os.Handler;
+import android.view.WindowManager;
 
 import com.google.android.glass.timeline.LiveCard;
 
@@ -21,13 +23,15 @@ public class LiveCardMenuActivity extends Activity {
 
     @Override
     public void onAttachedToWindow() {
+        Log.d(TAG, "onAttachedToWindow called");
         super.onAttachedToWindow();
         // Open the options menu right away.
-        openOptionsMenu();
+        // openOptionsMenu();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        Log.d(TAG, "onCreateOptionsMenu called");
         getMenuInflater().inflate(R.menu.distance_live_card, menu);
         return true;
     }
@@ -70,8 +74,7 @@ public class LiveCardMenuActivity extends Activity {
     @Override
     public void onOptionsMenuClosed(Menu menu) {
         super.onOptionsMenuClosed(menu);
-        // Nothing else to do, finish the Activity.
-        // finish();
+        Log.d(TAG, "onOptionsMenuClosed called");
     }
 
     @Override
@@ -91,6 +94,28 @@ public class LiveCardMenuActivity extends Activity {
         }
 
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    /**
+     * We need to call openOptionsMenu in onWindowFocusChanged instead of onResume
+     * because we have to wait for the window focus to change. Otherwise we will get a
+     * BadTokenException from WindowManager.
+     *
+     * @param hasFocusFlag
+     */
+    @Override
+    public void onWindowFocusChanged(boolean hasFocusFlag) {
+        Log.d(TAG, "onWindowFocusChanged called");
+        super.onWindowFocusChanged(hasFocusFlag);
+        if (hasFocusFlag) {
+            openOptionsMenu();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        Log.d(TAG, "onResume called");
+        super.onResume();
     }
 
     @Override

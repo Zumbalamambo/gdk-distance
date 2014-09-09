@@ -27,6 +27,15 @@ public class CaptureMenuActivity extends Activity {
     }
 
     @Override
+    public void onWindowFocusChanged(boolean hasFocusFlag) {
+        Log.d(TAG, "onWindowFocusChanged called");
+        super.onWindowFocusChanged(hasFocusFlag);
+        if (hasFocusFlag) {
+            openOptionsMenu();
+        }
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.distance_capture, menu);
         return true;
@@ -49,7 +58,6 @@ public class CaptureMenuActivity extends Activity {
 
         // This will trigger onStartCommand again.
         startService(serviceIntent);
-        finish();
 
         return true;
     }
@@ -57,6 +65,6 @@ public class CaptureMenuActivity extends Activity {
     @Override
     public void onOptionsMenuClosed(Menu menu) {
         super.onOptionsMenuClosed(menu);
-        // Do nothing.
+        finish();
     }
 }

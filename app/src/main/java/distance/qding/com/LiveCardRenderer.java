@@ -29,7 +29,7 @@ public class LiveCardRenderer implements DirectRenderingCallback, SensorEventLis
     /**
      * The duration, in millisconds, of one frame.
      */
-    private static final long FRAME_TIME_MILLIS = 40;
+    private static long FRAME_TIME_MILLIS = 40;
 
     /**
      * "Hello world" text size.
@@ -72,7 +72,7 @@ public class LiveCardRenderer implements DirectRenderingCallback, SensorEventLis
     private float mDistanceLocked;
 
     // Flag indicating whether we need to lock the distance or not.
-    private boolean mCapture;
+    private boolean isCapture;
 
     private int mCenterX;
     private int mCenterY;
@@ -82,7 +82,7 @@ public class LiveCardRenderer implements DirectRenderingCallback, SensorEventLis
 
     private RenderThread mRenderThread;
 
-    public LiveCardRenderer(Context context, String height, boolean isCapture) {
+    public LiveCardRenderer(Context context) {
         mPaint = new Paint();
         mPaint.setStyle(Paint.Style.FILL);
         mPaint.setColor(Color.WHITE);
@@ -91,15 +91,18 @@ public class LiveCardRenderer implements DirectRenderingCallback, SensorEventLis
         mPaint.setTextAlign(Paint.Align.CENTER);
         mPaint.setTypeface(Typeface.create("sans-serif-thin", Typeface.NORMAL));
         mPaint.setAlpha(100);
+    }
 
+    public void setHeight(String height) {
         // set mHeight
         mHeight = height;
+        Log.d(TAG, "mHeight: " + mHeight);
+    }
 
-        Log.d(TAG, "Height: " + mHeight);
-        // mText = context.getResources().getString(R.string.hello_world);
-
+    public void setCapture(boolean capture) {
         // set capture flag
-        mCapture = isCapture;
+        isCapture = capture;
+        Log.d(TAG, "isCapture: " + isCapture);
     }
 
     @Override
@@ -156,13 +159,14 @@ public class LiveCardRenderer implements DirectRenderingCallback, SensorEventLis
             return;
         }
         if (canvas != null) {
-            if (mCapture) {
-                mDistanceLocked = mDistance;
-                mText = mDecimalFormat.format(mDistanceLocked);
-            } else {
-                getDistance();
-            }
+            getDistance();
 
+            // If in capture status change refresh rate to infinite.
+            if (isCapture) {
+                FRAME_TIME_MILLIS = Long.MAX_VALUE;
+            } else {
+                FRAME_TIME_MILLIS = 40;
+            }
 
             // Clear the canvas.
             canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
