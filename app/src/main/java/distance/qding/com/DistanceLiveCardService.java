@@ -83,7 +83,9 @@ public class DistanceLiveCardService extends Service {
             mLiveCard.attach(this);
             mLiveCard.publish(PublishMode.REVEAL);
         } else {
-            mLiveCard.navigate();
+            if (!mLiveCard.isPublished()) {
+                mLiveCard.navigate();
+            }
         }
         return START_STICKY;
     }

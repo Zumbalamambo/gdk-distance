@@ -103,6 +103,14 @@ public class LiveCardRenderer implements DirectRenderingCallback, SensorEventLis
         // set capture flag
         isCapture = capture;
         Log.d(TAG, "isCapture: " + isCapture);
+
+        // If in capture status change refresh rate to infinite.
+        // Need to call it here instead of draw() because once refresh rate is changed draw will never be triggered.
+        if (isCapture) {
+            FRAME_TIME_MILLIS = Long.MAX_VALUE;
+        } else {
+            FRAME_TIME_MILLIS = 40;
+        }
     }
 
     @Override
@@ -160,13 +168,6 @@ public class LiveCardRenderer implements DirectRenderingCallback, SensorEventLis
         }
         if (canvas != null) {
             getDistance();
-
-            // If in capture status change refresh rate to infinite.
-            if (isCapture) {
-                FRAME_TIME_MILLIS = Long.MAX_VALUE;
-            } else {
-                FRAME_TIME_MILLIS = 40;
-            }
 
             // Clear the canvas.
             canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);

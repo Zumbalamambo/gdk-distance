@@ -52,14 +52,20 @@ public class CaptureMenuActivity extends Activity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Log.d(TAG, "onOptionsItemSelected called");
-        // Release capture status.
-        Intent serviceIntent = new Intent(this, DistanceLiveCardService.class);
-        serviceIntent.putExtra(KEY_CAPTURE, false);
 
-        // This will trigger onStartCommand again.
-        startService(serviceIntent);
+        switch (item.getItemId()) {
+            case R.id.action_release:
+                // Release capture status.
+                Intent serviceIntent = new Intent(this, DistanceLiveCardService.class);
+                serviceIntent.putExtra(KEY_CAPTURE, false);
 
-        return true;
+                // This will trigger onStartCommand again.
+                startService(serviceIntent);
+
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
