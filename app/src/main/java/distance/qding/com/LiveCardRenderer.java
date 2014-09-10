@@ -107,9 +107,11 @@ public class LiveCardRenderer implements DirectRenderingCallback, SensorEventLis
         // If in capture status change refresh rate to infinite.
         // Need to call it here instead of draw() because once refresh rate is changed draw will never be triggered.
         if (isCapture) {
-            FRAME_TIME_MILLIS = Long.MAX_VALUE;
+            mRenderingPaused = true;
+            updateRenderingState();
         } else {
-            FRAME_TIME_MILLIS = 40;
+            mRenderingPaused = false;
+            updateRenderingState();
         }
     }
 

@@ -3,10 +3,10 @@ package distance.qding.com;
 import android.app.Activity;
 import android.content.Intent;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.os.Handler;
-import android.view.WindowManager;
+import android.view.View;
 
 import com.google.android.glass.timeline.LiveCard;
 
@@ -21,12 +21,16 @@ public class LiveCardMenuActivity extends Activity {
     private static final String KEY_CAPTURE = "Capture";
     private static final String TAG = "LiveCardMenuActivity";
 
+    /**
+     * We don't actually need this method anymore because this just opens menu option once.
+     * We need to have it respond to tap every time.
+     */
     @Override
     public void onAttachedToWindow() {
         Log.d(TAG, "onAttachedToWindow called");
         super.onAttachedToWindow();
         // Open the options menu right away.
-        // openOptionsMenu();
+        openOptionsMenu();
     }
 
     @Override
@@ -100,16 +104,22 @@ public class LiveCardMenuActivity extends Activity {
      * We need to call openOptionsMenu in onWindowFocusChanged instead of onResume
      * because we have to wait for the window focus to change. Otherwise we will get a
      * BadTokenException from WindowManager.
-     *
-     * @param hasFocusFlag
      */
+//    @Override
+//    public void onWindowFocusChanged(boolean hasFocusFlag) {
+//        Log.d(TAG, "onWindowFocusChanged called");
+//        super.onWindowFocusChanged(hasFocusFlag);
+//        if (hasFocusFlag) {
+//            openOptionsMenu();
+//        }
+//    }
     @Override
-    public void onWindowFocusChanged(boolean hasFocusFlag) {
-        Log.d(TAG, "onWindowFocusChanged called");
-        super.onWindowFocusChanged(hasFocusFlag);
-        if (hasFocusFlag) {
+    public boolean onKeyDown(int keycode, KeyEvent event) {
+        if (keycode == KeyEvent.KEYCODE_DPAD_CENTER) {
             openOptionsMenu();
+            return true;
         }
+        return super.onKeyDown(keycode, event);
     }
 
     @Override

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -26,13 +27,22 @@ public class CaptureMenuActivity extends Activity {
         // openOptionsMenu();
     }
 
+//    @Override
+//    public void onWindowFocusChanged(boolean hasFocusFlag) {
+//        Log.d(TAG, "onWindowFocusChanged called");
+//        super.onWindowFocusChanged(hasFocusFlag);
+//        if (hasFocusFlag) {
+//            openOptionsMenu();
+//        }
+//    }
+
     @Override
-    public void onWindowFocusChanged(boolean hasFocusFlag) {
-        Log.d(TAG, "onWindowFocusChanged called");
-        super.onWindowFocusChanged(hasFocusFlag);
-        if (hasFocusFlag) {
+    public boolean onKeyDown(int keycode, KeyEvent event) {
+        if (keycode == KeyEvent.KEYCODE_DPAD_CENTER) {
             openOptionsMenu();
+            return true;
         }
+        return super.onKeyDown(keycode, event);
     }
 
     @Override
